@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.OrderManagerMapper">
+    
+    <resultMap type="OrderManager" id="OrderManagerResult">
+        <result property="id"    column="id"    />
+        <result property="orderDate"    column="order_date"    />
+        <result property="orderTime"    column="order_time"    />
+        <result property="start"    column="start"    />
+        <result property="end"    column="end"    />
+        <result property="carType"    column="car_type"    />
+        <result property="carNo"    column="car_no"    />
+        <result property="custmerId"    column="custmer_id"    />
+        <result property="custmerName"    column="custmer_name"    />
+        <result property="phoneNum"    column="phone_num"    />
+        <result property="paymentTerm"    column="payment_term"    />
+        <result property="towingFee"    column="towing_fee"    />
+        <result property="towcarNo"    column="towcar_no"    />
+        <result property="commission"    column="commission"    />
+        <result property="zaFee"    column="za_fee"    />
+        <result property="approveStatus"    column="approve_status"    />
+        <result property="driverName"    column="driver_name"    />
+        <result property="userId"    column="user_id"    />
+        <result property="companyPay"    column="company_pay"    />
+        <result property="returnMoney"    column="return_money"    />
+        <result property="refuelMoney"    column="refuel_money"    />
+        <result property="refuelcardMoney"    column="refuelcard_money"    />
+        <result property="mileage"    column="mileage"    />
+        <result property="remark"    column="remark"    />
+        <result property="appRemark"    column="app_remark"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectOrderManagerVo">
+        select id, order_date, order_time, start, end, car_type, car_no, custmer_id, custmer_name, phone_num, payment_term, towing_fee, towcar_no, commission, za_fee, approve_status, driver_name, user_id, company_pay, return_money, refuel_money, refuelcard_money, mileage, remark, app_remark, update_time from order_manager
+    </sql>
+
+    <select id="selectOrderManagerList" parameterType="OrderManager" resultMap="OrderManagerResult">
+         <include refid="selectOrderManagerVo"/>
+        <where>
+            <if test="id != null and id !=''"> and id = #{id}</if>
+            <if test="orderDate != null "> and order_date = #{orderDate}</if>
+            <if test="orderTime != null "> and order_time = #{orderTime}</if>
+            <if test="start != null  and start != ''"> and start like concat('%', #{start}, '%')</if>
+            <if test="end != null  and end != ''"> and end like concat('%', #{end}, '%')</if>
+            <if test="carType != null  and carType != ''"> and car_type = #{carType}</if>
+            <if test="carNo != null  and carNo != ''"> and car_no = #{carNo}</if>
+            <if test="custmerId != null "> and custmer_id = #{custmerId}</if>
+            <if test="custmerName != null  and custmerName != ''"> and custmer_name like concat('%', #{custmerName}, '%')</if>
+            <if test="phoneNum != null  and phoneNum != ''"> and phone_num = #{phoneNum}</if>
+            <if test="paymentTerm != null "> and payment_term = #{paymentTerm}</if>
+            <if test="towingFee != null "> and towing_fee = #{towingFee}</if>
+            <if test="towcarNo != null  and towcarNo != ''"> and towcar_no = #{towcarNo}</if>
+            <if test="commission != null "> and commission = #{commission}</if>
+            <if test="zaFee != null "> and za_fee = #{zaFee}</if>
+            <if test="approveStatus != null "> and approve_status = #{approveStatus}</if>
+            <if test="driverName != null  and driverName != ''"> and driver_name like concat('%', #{driverName}, '%')</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="companyPay != null "> and company_pay = #{companyPay}</if>
+            <if test="returnMoney != null "> and return_money = #{returnMoney}</if>
+            <if test="refuelMoney != null "> and refuel_money = #{refuelMoney}</if>
+            <if test="refuelcardMoney != null "> and refuelcard_money = #{refuelcardMoney}</if>
+            <if test="mileage != null  and mileage != ''"> and mileage = #{mileage}</if>
+            <if test="appRemark != null  and appRemark != ''"> and app_remark = #{appRemark}</if>
+        </where>
+        order by order_date desc
+    </select>
+    
+    <select id="selectOrderManagerById" parameterType="Long" resultMap="OrderManagerResult">
+        <include refid="selectOrderManagerVo"/>
+        where id = #{id}
+    </select>
+    <!--统计加油金额数据-->
+    <select id="selectRefuelByMonth" resultType="Double">
+        SELECT  t.refuel_money + t.refuelcard_money AS refuelMoney FROM order_manager  t
+        GROUP BY DATE_FORMAT(t.order_date,'%c') ORDER BY DATE_FORMAT(t.order_date,'%c') ASC
+    </select>
+    <!--统计司机回款金额数据-->
+    <select id="selectReturnMoneyByMonth" resultType="Double">
+        SELECT  t.return_money AS returnMoney FROM order_manager  t WHERE t.approve_status = 2
+        GROUP BY DATE_FORMAT(t.order_date,'%c') ORDER BY DATE_FORMAT(t.order_date,'%c') ASC
+    </select>
+    <!--统计司机提成金额数据-->
+    <select id="selectCommissionMoneyByMonth" resultType="Double">
+        SELECT  t.commission AS commission FROM order_manager  t WHERE t.approve_status = 2
+        GROUP BY DATE_FORMAT(t.order_date,'%c') ORDER BY DATE_FORMAT(t.order_date,'%c') ASC
+    </select>
+    <!--统计公司利润数据-->
+    <select id="selectIncomeMoneyByMonth" resultType="Double">
+        SELECT  t.towing_fee-t.refuel_money-t.refuelcard_money-t.commission AS commission FROM order_manager  t WHERE t.approve_status = 2
+        GROUP BY DATE_FORMAT(t.order_date,'%c') ORDER BY DATE_FORMAT(t.order_date,'%c') ASC
+    </select>
+        
+    <insert id="insertOrderManager" parameterType="OrderManager" useGeneratedKeys="true" keyProperty="id">
+        insert into order_manager
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderDate != null">order_date,</if>
+            <if test="orderTime != null">order_time,</if>
+            <if test="start != null and start != ''">start,</if>
+            <if test="end != null and end != ''">end,</if>
+            <if test="carType != null and carType != ''">car_type,</if>
+            <if test="carNo != null and carNo != ''">car_no,</if>
+            <if test="custmerId != null">custmer_id,</if>
+            <if test="custmerName != null and custmerName != ''">custmer_name,</if>
+            <if test="phoneNum != null and phoneNum != ''">phone_num,</if>
+            <if test="paymentTerm != null">payment_term,</if>
+            <if test="towingFee != null">towing_fee,</if>
+            <if test="towcarNo != null and towcarNo != ''">towcar_no,</if>
+            <if test="commission != null">commission,</if>
+            <if test="zaFee != null">za_fee,</if>
+            <if test="approveStatus != null">approve_status,</if>
+            <if test="driverName != null and driverName != ''">driver_name,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="companyPay != null">company_pay,</if>
+            <if test="returnMoney != null">return_money,</if>
+            <if test="refuelMoney != null">refuel_money,</if>
+            <if test="refuelcardMoney != null">refuelcard_money,</if>
+            <if test="mileage != null and mileage != ''">mileage,</if>
+            <if test="remark != null and remark != ''">remark,</if>
+            <if test="appRemark != null and appRemark != ''">app_remark,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderDate != null">#{orderDate},</if>
+            <if test="orderTime != null">#{orderTime},</if>
+            <if test="start != null and start != ''">#{start},</if>
+            <if test="end != null and end != ''">#{end},</if>
+            <if test="carType != null and carType != ''">#{carType},</if>
+            <if test="carNo != null and carNo != ''">#{carNo},</if>
+            <if test="custmerId != null">#{custmerId},</if>
+            <if test="custmerName != null and custmerName != ''">#{custmerName},</if>
+            <if test="phoneNum != null and phoneNum != ''">#{phoneNum},</if>
+            <if test="paymentTerm != null">#{paymentTerm},</if>
+            <if test="towingFee != null">#{towingFee},</if>
+            <if test="towcarNo != null and towcarNo != ''">#{towcarNo},</if>
+            <if test="commission != null">#{commission},</if>
+            <if test="zaFee != null">#{zaFee},</if>
+            <if test="approveStatus != null">#{approveStatus},</if>
+            <if test="driverName != null and driverName != ''">#{driverName},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="companyPay != null">#{companyPay},</if>
+            <if test="returnMoney != null">#{returnMoney},</if>
+            <if test="refuelMoney != null">#{refuelMoney},</if>
+            <if test="refuelcardMoney != null">#{refuelcardMoney},</if>
+            <if test="mileage != null and mileage != ''">#{mileage},</if>
+            <if test="remark != null and remark != ''">#{remark},</if>
+            <if test="appRemark != null and appRemark != ''">#{appRemark},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOrderManager" parameterType="OrderManager">
+        update order_manager
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderDate != null">order_date = #{orderDate},</if>
+            <if test="orderTime != null">order_time = #{orderTime},</if>
+            <if test="start != null and start != ''">start = #{start},</if>
+            <if test="end != null and end != ''">end = #{end},</if>
+            <if test="carType != null and carType != ''">car_type = #{carType},</if>
+            <if test="carNo != null and carNo != ''">car_no = #{carNo},</if>
+            <if test="custmerId != null">custmer_id = #{custmerId},</if>
+            <if test="custmerName != null and custmerName != ''">custmer_name = #{custmerName},</if>
+            <if test="phoneNum != null and phoneNum != ''">phone_num = #{phoneNum},</if>
+            <if test="paymentTerm != null">payment_term = #{paymentTerm},</if>
+            <if test="towingFee != null">towing_fee = #{towingFee},</if>
+            <if test="towcarNo != null and towcarNo != ''">towcar_no = #{towcarNo},</if>
+            <if test="commission != null">commission = #{commission},</if>
+            <if test="zaFee != null">za_fee = #{zaFee},</if>
+            <if test="approveStatus != null">approve_status = #{approveStatus},</if>
+            <if test="driverName != null and driverName != ''">driver_name = #{driverName},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="companyPay != null">company_pay = #{companyPay},</if>
+            <if test="returnMoney != null">return_money = #{returnMoney},</if>
+            <if test="refuelMoney != null">refuel_money = #{refuelMoney},</if>
+            <if test="refuelcardMoney != null">refuelcard_money = #{refuelcardMoney},</if>
+            <if test="mileage != null and mileage != ''">mileage = #{mileage},</if>
+            <if test="remark != null and remark != ''">remark = #{remark},</if>
+            <if test="appRemark != null and appRemark != ''">app_remark = #{appRemark},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteOrderManagerById" parameterType="Long">
+        delete from order_manager where id = #{id}
+    </delete>
+
+    <delete id="deleteOrderManagerByIds" parameterType="String">
+        delete from order_manager where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

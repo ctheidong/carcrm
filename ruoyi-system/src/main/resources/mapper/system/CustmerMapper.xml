@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.CustmerMapper">
+    
+    <resultMap type="Custmer" id="CustmerResult">
+        <result property="id"    column="id"    />
+        <result property="phoneNum"    column="phone_num"    />
+        <result property="custmerName"    column="custmer_name"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectCustmerVo">
+        select id, custmer_name, create_time, remark,phone_num from custmer
+    </sql>
+
+    <select id="selectCustmerList" parameterType="Custmer" resultMap="CustmerResult">
+        <include refid="selectCustmerVo"/>
+        <where>  
+            <if test="custmerName != null  and custmerName != ''"> and custmer_name like concat('%', #{custmerName}, '%')</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectCustmerById" parameterType="Long" resultMap="CustmerResult">
+        <include refid="selectCustmerVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertCustmer" parameterType="Custmer" useGeneratedKeys="true" keyProperty="id">
+        insert into custmer
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="phoneNum != null">phone_num,</if>
+            <if test="custmerName != null">custmer_name,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="phoneNum != null">#{phoneNum},</if>
+            <if test="custmerName != null">#{custmerName},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCustmer" parameterType="Custmer">
+        update custmer
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="phoneNum != null">phone_num = #{phoneNum},</if>
+            <if test="custmerName != null">custmer_name = #{custmerName},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCustmerById" parameterType="Long">
+        delete from custmer where id = #{id}
+    </delete>
+
+    <delete id="deleteCustmerByIds" parameterType="String">
+        delete from custmer where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

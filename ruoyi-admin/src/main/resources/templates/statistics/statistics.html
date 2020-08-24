@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('百度ECharts')" />
+</head>
+<body class="gray-bg">
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="ibox float-e-margins">
+                <!--<div class="ibox-title">-->
+                    <!--<h5>折线图</h5>-->
+                    <!--<div class="ibox-tools">-->
+                        <!--<a class="collapse-link">-->
+                            <!--<i class="fa fa-chevron-up"></i>-->
+                        <!--</a>-->
+                        <!--<a class="dropdown-toggle" data-toggle="dropdown" href="graph_flot.html#">-->
+                            <!--<i class="fa fa-wrench"></i>-->
+                        <!--</a>-->
+                        <!--<ul class="dropdown-menu dropdown-user">-->
+                            <!--<li><a href="graph_flot.html#">选项1</a>-->
+                            <!--</li>-->
+                            <!--<li><a href="graph_flot.html#">选项2</a>-->
+                            <!--</li>-->
+                        <!--</ul>-->
+                        <!--<a class="close-link">-->
+                            <!--<i class="fa fa-times"></i>-->
+                        <!--</a>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <div class="ibox-content">
+                    <div class="echarts" id="echarts-line-chart"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="ibox float-e-margins">
+                <!--<div class="ibox-title">-->
+                    <!--<h5>柱状图</h5>-->
+                    <!--<div class="ibox-tools">-->
+                        <!--<a class="collapse-link">-->
+                            <!--<i class="fa fa-chevron-up"></i>-->
+                        <!--</a>-->
+                        <!--<a class="dropdown-toggle" data-toggle="dropdown" href="graph_flot.html#">-->
+                            <!--<i class="fa fa-wrench"></i>-->
+                        <!--</a>-->
+                        <!--<ul class="dropdown-menu dropdown-user">-->
+                            <!--<li><a href="graph_flot.html#">选项1</a>-->
+                            <!--</li>-->
+                            <!--<li><a href="graph_flot.html#">选项2</a>-->
+                            <!--</li>-->
+                        <!--</ul>-->
+                        <!--<a class="close-link">-->
+                            <!--<i class="fa fa-times"></i>-->
+                        <!--</a>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <div class="ibox-content">
+
+                    <div class="echarts" id="echarts-bar-chart"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="ibox float-e-margins">
+                <!--<div class="ibox-title">-->
+                <!--<h5>折线图</h5>-->
+                <!--<div class="ibox-tools">-->
+                <!--<a class="collapse-link">-->
+                <!--<i class="fa fa-chevron-up"></i>-->
+                <!--</a>-->
+                <!--<a class="dropdown-toggle" data-toggle="dropdown" href="graph_flot.html#">-->
+                <!--<i class="fa fa-wrench"></i>-->
+                <!--</a>-->
+                <!--<ul class="dropdown-menu dropdown-user">-->
+                <!--<li><a href="graph_flot.html#">选项1</a>-->
+                <!--</li>-->
+                <!--<li><a href="graph_flot.html#">选项2</a>-->
+                <!--</li>-->
+                <!--</ul>-->
+                <!--<a class="close-link">-->
+                <!--<i class="fa fa-times"></i>-->
+                <!--</a>-->
+                <!--</div>-->
+                <!--</div>-->
+                <div class="ibox-content">
+                    <div class="echarts" id="echarts-scatter-chart"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="ibox float-e-margins">
+                <!--<div class="ibox-title">-->
+                <!--<h5>折线图</h5>-->
+                <!--<div class="ibox-tools">-->
+                <!--<a class="collapse-link">-->
+                <!--<i class="fa fa-chevron-up"></i>-->
+                <!--</a>-->
+                <!--<a class="dropdown-toggle" data-toggle="dropdown" href="graph_flot.html#">-->
+                <!--<i class="fa fa-wrench"></i>-->
+                <!--</a>-->
+                <!--<ul class="dropdown-menu dropdown-user">-->
+                <!--<li><a href="graph_flot.html#">选项1</a>-->
+                <!--</li>-->
+                <!--<li><a href="graph_flot.html#">选项2</a>-->
+                <!--</li>-->
+                <!--</ul>-->
+                <!--<a class="close-link">-->
+                <!--<i class="fa fa-times"></i>-->
+                <!--</a>-->
+                <!--</div>-->
+                <!--</div>-->
+                <div class="ibox-content">
+                    <div class="echarts" id="echarts-k-chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<th:block th:include="include :: footer" />
+<th:block th:include="include :: echarts-js" />
+<script type="text/javascript" th:inline="javascript">
+    $(function () {
+        var lineChart = echarts.init(document.getElementById("echarts-line-chart"));
+        var lineoption = {
+            title : {
+                text: '加油支出报表'
+            },
+            tooltip : {
+                trigger: 'axis'
+            },
+            toolbox: {
+                show : true,
+                feature : {
+                    mark : {show: true},
+                    restore : {show: true},
+                    saveAsImage : {show: true}
+                }
+            },
+            legend: {
+                data:['加油金额']
+            },
+            grid:{
+                x:40,
+                x2:40,
+                y2:24
+            },
+            calculable : true,
+            xAxis : [
+                {
+                    type : 'category',
+                    boundaryGap : false,
+                    axisLabel:{interval:0},//设置横坐标的文字全部显示，不间隔
+                    data : ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
+                }
+            ],
+            yAxis : [
+                {
+                    type : 'value',
+                    axisLabel : {
+                        formatter: '{value}'
+                    }
+                }
+            ],
+            series : [
+                {
+                    name:'加油金额',
+                    type:'line',
+                    data:[],
+                    // markPoint : {
+                    //     data : [
+                    //         {type : 'max', name: '最大值'},
+                    //         {type : 'min', name: '最小值'}
+                    //     ]
+                    // },
+                    markLine : {
+                        data : [
+                            {type : 'average', name: '平均值'}
+                        ]
+                    }
+                }
+                // ,
+                // {
+                //     name:'最低气温',
+                //     type:'line',
+                //     data:[1, -2, 2, 5, 3, 2, 0],
+                //     markPoint : {
+                //         data : [
+                //             {name : '周最低', value : -2, xAxis: 1, yAxis: -1.5}
+                //         ]
+                //     },
+                //     markLine : {
+                //         data : [
+                //             {type : 'average', name : '平均值'}
+                //         ]
+                //     }
+                // }
+            ]
+        };
+        lineChart.setOption(lineoption);
+        lineChart.setOption({
+            series: [{data: [[${refuelByMonth}]]}]
+        });
+        $(window).resize(lineChart.resize);
+
+        var barChart = echarts.init(document.getElementById("echarts-bar-chart"));
+        var baroption = {
+            title : {
+                text: '司机回款报表'
+            },
+            tooltip : {
+                trigger: 'axis'
+            },
+            toolbox: {
+                show : true,
+                feature : {
+                    mark : {show: true},
+                    restore : {show: true},
+                    saveAsImage : {show: true}
+                }
+            },
+            legend: {
+                data:['回款金额']
+            },
+            grid:{
+                x:30,
+                x2:40,
+                y2:24
+            },
+            calculable : true,
+            xAxis : [
+                {
+                    type : 'category',
+                    data : ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
+                }
+            ],
+            yAxis : [
+                {
+                    type : 'value'
+                }
+            ],
+            series : [
+                {
+                    name:'回款金额',
+                    type:'bar',
+                    data:[],
+                    // markPoint : {
+                    //     data : [
+                    //         {type : 'max', name: '最大值'},
+                    //         {type : 'min', name: '最小值'}
+                    //     ]
+                    // },
+                    markLine : {
+                        data : [
+                            {type : 'average', name: '平均值'}
+                        ]
+                    }
+                }
+
+            ]
+        };
+        barChart.setOption(baroption);
+        barChart.setOption({
+            series: [{data: [[${returnMoneyByMonth}]]}]
+        });
+        window.onresize = barChart.resize;
+
+        var scatterChart = echarts.init(document.getElementById("echarts-scatter-chart"));
+        var scatteroption =  {
+            title : {
+                text: '司机提成报表'
+            },
+            tooltip : {
+                trigger: 'axis'
+            },
+            toolbox: {
+                show : true,
+                feature : {
+                    mark : {show: true},
+                    restore : {show: true},
+                    saveAsImage : {show: true}
+                }
+            },
+            legend: {
+                data:['提成金额']
+            },
+            grid:{
+                x:30,
+                x2:40,
+                y2:24
+            },
+            calculable : true,
+            xAxis : [
+                {
+                    type : 'category',
+                    data : ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
+                }
+            ],
+            yAxis : [
+                {
+                    type : 'value'
+                }
+            ],
+            series : [
+                {
+                    name:'提成金额',
+                    type:'line',
+                    data:[],
+                    // markPoint : {
+                    //     data : [
+                    //         {type : 'max', name: '最大值'},
+                    //         {type : 'min', name: '最小值'}
+                    //     ]
+                    // },
+                    markLine : {
+                        data : [
+                            {type : 'average', name: '平均值'}
+                        ]
+                    }
+                }
+
+            ]
+        };
+        scatterChart.setOption(scatteroption);
+        scatterChart.setOption({
+            series: [{data: [[${commissionMoneyByMonth}]]}]
+        });
+        $(window).resize(scatterChart.resize);
+
+
+        var kChart = echarts.init(document.getElementById("echarts-k-chart"));
+        var koption = {
+            title : {
+                text: '公司利润报表'
+            },
+            tooltip : {
+                trigger: 'axis'
+            },
+            toolbox: {
+                show : true,
+                feature : {
+                    mark : {show: true},
+                    restore : {show: true},
+                    saveAsImage : {show: true}
+                }
+            },
+            legend: {
+                data:['利润金额']
+            },
+            grid:{
+                x:30,
+                x2:40,
+                y2:24
+            },
+            calculable : true,
+            xAxis : [
+                {
+                    type : 'category',
+                    data : ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
+                }
+            ],
+            yAxis : [
+                {
+                    type : 'value'
+                }
+            ],
+            series : [
+                {
+                    name:'利润金额',
+                    type:'line',
+                    data:[],
+                    // markPoint : {
+                    //     data : [
+                    //         {type : 'max', name: '最大值'},
+                    //         {type : 'min', name: '最小值'}
+                    //     ]
+                    // },
+                    markLine : {
+                        data : [
+                            {type : 'average', name: '平均值'}
+                        ]
+                    }
+                }
+
+            ]
+        };
+        kChart.setOption(koption);
+        kChart.setOption({
+            series: [{data: [[${incomeMoneyByMonth}]]}]
+        });
+        $(window).resize(kChart.resize);
+
+    });
+</script>
+</body>
+</html>

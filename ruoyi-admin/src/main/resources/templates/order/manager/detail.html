@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改订单管理')" />
+    <th:block th:include="include :: datetimepicker-css" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-manager-edit" th:object="${orderManager}">
+            <input name="id" th:field="*{id}" type="hidden">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">日期：</label>
+                <!--<div class="col-sm-8">-->
+                    <!--<div class="input-group date">-->
+                        <!--<input name="orderDate" th:value="${#dates.format(orderManager.orderDate, 'yyyy-MM-dd')}" class="form-control" placeholder="yyyy-MM-dd" type="text">-->
+                        <!--<span class="input-group-addon"><i class="fa fa-calendar"></i></span>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <div class="form-control-static" th:text="${#dates.format(orderManager.orderDate, 'yyyy-MM-dd')}"></div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">时间：</label>
+                <!--<div class="col-sm-8">-->
+                    <!--<div class="input-group date">-->
+                        <!--<input name="orderTime" th:value="${#dates.format(orderManager.orderTime, 'yyyy-MM-dd')}" class="form-control" placeholder="yyyy-MM-dd" type="text" required>-->
+                        <!--<span class="input-group-addon"><i class="fa fa-calendar"></i></span>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <div class="form-control-static" th:text="${orderManager.orderTime}"></div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label ">起点：</label>
+                <!--<div class="col-sm-8">-->
+                    <!--<input name="start" th:field="*{start}" class="form-control" type="text" required>-->
+                <!--</div>-->
+                <div class="form-control-static" th:text="${orderManager.start}"></div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label ">终点：</label>
+                <!--<div class="col-sm-8">-->
+                    <!--<input name="end" th:field="*{end}" class="form-control" type="text" required>-->
+                <!--</div>-->
+                <div class="form-control-static" th:text="${orderManager.end}"></div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">车型：</label>
+                <!--<div class="col-sm-8">-->
+                    <!--<select name="carType" class="form-control m-b" required>-->
+                        <!--<option value="">所有</option>-->
+                    <!--</select>-->
+                    <!--<span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 代码生成请选择字典属性</span>-->
+                <!--</div>-->
+                <div class="form-control-static" th:text="${orderManager.carType}"></div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label ">车牌号：</label>
+                <!--<div class="col-sm-8">-->
+                    <!--<input name="carNo" th:field="*{carNo}" class="form-control" type="text" required>-->
+                <!--</div>-->
+                <div class="form-control-static" th:text="${orderManager.carNo}"></div>
+            </div>
+            <!--<div class="form-group">    -->
+                <!--<label class="col-sm-3 control-label ">客户id：</label>-->
+                <!--&lt;!&ndash;<div class="col-sm-8">&ndash;&gt;-->
+                    <!--&lt;!&ndash;<input name="custmerId" th:field="*{custmerId}" class="form-control" type="text" required>&ndash;&gt;-->
+                <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                <!--<div class="form-control-static" th:text="${orderManager.carNo}"></div>-->
+            <!--</div>-->
+            <div class="form-group">    
+                <label class="col-sm-3 control-label ">客户姓名：</label>
+                <!--<div class="col-sm-8">-->
+                    <!--<input name="custmerName" th:field="*{custmerName}" class="form-control" type="text" required>-->
+                <!--</div>-->
+                <div class="form-control-static" th:text="${orderManager.custmerName}"></div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label ">联系电话：</label>
+                <!--<div class="col-sm-8">-->
+                    <!--<input name="phoneNum" th:field="*{phoneNum}" class="form-control" type="text" required>-->
+                <!--</div>-->
+                <div class="form-control-static" th:text="${orderManager.phoneNum}"></div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label ">收款方式：</label>
+                <div class="col-sm-8">
+                    <select name="paymentTerm" class="form-control m-b" th:with="type=${@dict.getType('payment_term')}" disabled>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{paymentTerm}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label ">拖车费：</label>
+                <!--<div class="col-sm-8">-->
+                    <!--<input name="towingFee" th:field="*{towingFee}" class="form-control" type="text" required>-->
+                <!--</div>-->
+                <div class="form-control-static" th:text="${orderManager.towingFee}"></div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label ">拖车车牌号：</label>
+                <!--<div class="col-sm-8">-->
+                    <!--<input name="towcarNo" th:field="*{towcarNo}" class="form-control" type="text" required>-->
+                <!--</div>-->
+                <div class="form-control-static" th:text="${orderManager.towcarNo}"></div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label ">提成：</label>
+                <!--<div class="col-sm-8">-->
+                    <!--<input name="commission" th:field="*{commission}" class="form-control" type="text" required>-->
+                <!--</div>-->
+                <div class="form-control-static" th:text="${orderManager.commission}"></div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label ">杂费：</label>
+                <!--<div class="col-sm-8">-->
+                    <!--<input name="zaFee" th:field="*{zaFee}" class="form-control" type="text" required>-->
+                <!--</div>-->
+                <div class="form-control-static" th:text="${orderManager.zaFee}"></div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label ">备注：</label>
+                <div class="form-control-static" th:text="${orderManager.remark}"></div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">审批状态：</label>
+                <div class="col-sm-8 ">
+                    <div class="radio-box" th:each="dict : ${@dict.getType('approve_status')}">
+                        <input type="radio" th:id="${'approveStatus_' + dict.dictCode}" name="approveStatus" th:value="${dict.dictValue}" th:field="*{approveStatus}" disabled>
+                        <label th:for="${'approveStatus_' + dict.dictCode}" th:text="${dict.dictLabel}"></label>
+                    </div>
+                </div>
+                <!--<div class="form-control-static" th:text="${orderManager.approveStatus}"></div>-->
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label ">司机姓名：</label>
+                <!--<div class="col-sm-8">-->
+                    <!--<input name="driverName" th:field="*{driverName}" class="form-control" type="text" required>-->
+                <!--</div>-->
+                <div class="form-control-static" th:text="${orderManager.driverName}"></div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label ">公司支付金额：</label>
+                <!--<div class="col-sm-8">-->
+                    <!--<input name="companyPay" th:field="*{companyPay}" class="form-control" type="text" required>-->
+                <!--</div>-->
+                <div class="form-control-static" th:text="${orderManager.carNo}"></div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label ">司机回款金额：</label>
+                <!--<div class="col-sm-8">-->
+                    <!--<input name="returnMoney" th:field="*{returnMoney}" class="form-control" type="text" required>-->
+                <!--</div>-->
+                <div class="form-control-static" th:text="${orderManager.returnMoney}"></div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label ">加油金额：</label>
+                <!--<div class="col-sm-8">-->
+                    <!--<input name="refuelMoney" th:field="*{refuelMoney}" class="form-control" type="text" required>-->
+                <!--</div>-->
+                <div class="form-control-static" th:text="${orderManager.refuelMoney}"></div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label ">加油卡加油费：</label>
+                <!--<div class="col-sm-8">-->
+                    <!--<input name="refuelcardMoney" th:field="*{refuelcardMoney}" class="form-control" type="text" required>-->
+                <!--</div>-->
+                <div class="form-control-static" th:text="${orderManager.refuelcardMoney}"></div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label ">加油公里数：</label>
+                <!--<div class="col-sm-8">-->
+                    <!--<input name="mileage" th:field="*{mileage}" class="form-control" type="text" required>-->
+                <!--</div>-->
+                <div class="form-control-static" th:text="${orderManager.mileage}"></div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label ">审批备注：</label>
+                <!--<div class="col-sm-8">-->
+                    <!--<input name="appRemark" th:field="*{appRemark}" class="form-control" type="text" required>-->
+                <!--</div>-->
+                <div class="form-control-static" th:text="${orderManager.appRemark}"></div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <script th:inline="javascript">
+        var prefix = ctx + "order/manager";
+        $("#form-manager-edit").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/edit", $('#form-manager-edit').serialize());
+            }
+        }
+
+        $("input[name='orderDate']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        $("input[name='orderTime']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+    </script>
+</body>
+</html>
