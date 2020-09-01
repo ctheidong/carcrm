@@ -58,7 +58,7 @@ public class CarController extends BaseController
     /**
      * 小程序查询拖车管理列表
      */
-    @ApiOperation(value = "拖车车牌号查询列表",httpMethod = "post")
+    @ApiOperation(value = "拖车车牌号查询列表",httpMethod = "POST")
     @ApiImplicitParam(name = "Car",value = "{}",defaultValue = "{} 默认传空对象")
     @Authorize
     @PostMapping("/getlist")

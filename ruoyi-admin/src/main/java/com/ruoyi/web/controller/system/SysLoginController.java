@@ -3,6 +3,7 @@ package com.ruoyi.web.controller.system;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.redis.CacheTime;
 import com.ruoyi.common.utils.MessageUtils;
 import com.ruoyi.common.utils.ServletUtils;
@@ -15,6 +16,7 @@ import com.ruoyi.system.module.utils.JwtUtil;
 import com.ruoyi.system.module.utils.PassToken;
 import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.service.ISysUserService;
+import com.ruoyi.system.utils.ResultDemo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -34,9 +36,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.Serializable;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Map;
+import java.lang.annotation.Target;
+import java.util.*;
 
 /**
  * 登录验证
@@ -94,20 +95,27 @@ public class SysLoginController extends BaseController
     @SuppressWarnings("all")
     @PostMapping("/userlogin")
     @PassToken
-    @ApiOperation(value = "小程序登录接口",httpMethod = "post")
+    @ApiOperation(value = "小程序登录接口",httpMethod = "POST")
     @ApiImplicitParams({
           @ApiImplicitParam(name = "userName",value = "用户名", required = true),
           @ApiImplicitParam(name = "password",value = "密码", required = true)
     })
     @ResponseBody
-    public AjaxResult userlogin(@RequestBody  SysUser user)
+    public TableDataInfo userlogin(@RequestBody  SysUser user)
     {
+        List<Map<String,Object>> list  = new ArrayList<>();
+        TableDataInfo tableDataInfo = new TableDataInfo();
         String username = user.getUserName();
         String password = user.getPassword();
         //通过登录名查询出用户对应的盐值
         SysUser user1 = userService.selectUserByLoginName(username);
         if(!StringUtils.isNotNull(user1)){
-            return  AjaxResult.error("用户不存在!");
+//            return  AjaxResult.error("用户不存在!");
+            tableDataInfo.setCode(500);
+            tableDataInfo.setMsg("用户不存在！");
+            tableDataInfo.setRows(list);
+            tableDataInfo.setTotal(0);
+            return  tableDataInfo;
         }
         //通过登录名查询出该用户的登录密码,验证从数据库查询出来的值与当前值保持一致
         //根据用户名 密码 和用户对应的盐值 得到加密后的密码
@@ -117,7 +125,7 @@ public class SysLoginController extends BaseController
         // 然后再通过登录名称和加密后的密码查询数据库对应的用户信息  是否存在
         SysUser userResult = userService.selectUserByLoginNameAndPwd(user);
         if(!StringUtils.isNotNull(user1)){
-            return AjaxResult.error("用户不存在!");
+            return ResultDemo.result();
         }
         user.setPassword(userResult.getPassword());
         UsernamePasswordToken token = new UsernamePasswordToken(username, password);
@@ -142,9 +150,11 @@ public class SysLoginController extends BaseController
             map.put("token",jwtToken);//token
             map.put("userId",userResult.getUserId());//用户userId
             map.put("userName",userResult.getUserName());//用户名称
+            map.put("loginName",userResult.getLoginName());//登录名称
 //            map.put("auth",stringList);//菜单列表
 //            map.put("roleId",sysRoles);//角色列表
-            return AjaxResult.success(map);
+            list.add(map);
+            return getDataTable(list);
         }
         catch (AuthenticationException e)
         {
@@ -153,10 +163,10 @@ public class SysLoginController extends BaseController
             {
                 msg = e.getMessage();
             }
-            return error(msg);
+            return ResultDemo.resultError(msg);
         }catch (Exception e){
             e.printStackTrace();
-            return error("请求异常!");
+            return ResultDemo.resultException("请求异常!");
         }
 
     }
@@ -167,15 +177,20 @@ public class SysLoginController extends BaseController
     @PostMapping("/quit")
     @ResponseBody
     @PassToken
-    public AjaxResult quit(@RequestBody SysUser user){
-//        SysUser user1 = ShiroUtils.getSysUser();
-        if (StringUtils.isNotNull(user))
-        {
-            String loginName = user.getLoginName();
-            // 记录用户退出日志
-            AsyncManager.me().execute(AsyncFactory.recordLogininfor(loginName, Constants.LOGOUT, MessageUtils.message("user.logout.success")));
+    public TableDataInfo quit(@RequestBody SysUser user){
+
+        try {
+            if (StringUtils.isNotNull(user))
+            {
+                String loginName = user.getLoginName();
+                // 记录用户退出日志
+                AsyncManager.me().execute(AsyncFactory.recordLogininfor(loginName, Constants.LOGOUT, MessageUtils.message("user.logout.success")));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultDemo.resultException("退出异常！");
         }
-        return  AjaxResult.success();
+        return ResultDemo.resultSuccess("退出成功！");
     }
     @GetMapping("/unauth")
     public String unauth()

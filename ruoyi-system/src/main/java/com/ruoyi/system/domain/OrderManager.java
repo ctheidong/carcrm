@@ -56,7 +56,7 @@ public class OrderManager extends BaseEntity
     /** 客户id */
     @Excel(name = "客户id")
     @ApiModelProperty(value = "客户id")
-    private Long custmerId;
+    private String custmerId;
 
     /** 客户姓名 */
     @Excel(name = "客户姓名")
@@ -69,10 +69,21 @@ public class OrderManager extends BaseEntity
     private String phoneNum;
 
     /** 收款方式 1：记账 2：司机收款 3公司二维码： */
+    @ApiModelProperty(value = "记账金额")
+    @Excel(name = "记账金额")
+    private double recordMoney;
+
+    @ApiModelProperty(value = "公司二维码收款金额")
+    @Excel(name = "公司二维码收款金额")
+    private double componyReceiverMoney;
+
+    @ApiModelProperty(value = "司机收款金额")
+    @Excel(name = "司机收款金额")
+    private double driverReceiverMoney;
+
     @ApiModelProperty(value = "收款方式 1：记账 2：司机收款 3公司二维码：")
     @Excel(name = "收款方式 1：记账 2：司机收款 3公司二维码：")
     private Integer paymentTerm;
-
     /** 拖车费 */
     @ApiModelProperty(value = "拖车费")
     @Excel(name = "拖车费")
@@ -132,10 +143,27 @@ public class OrderManager extends BaseEntity
     @Excel(name = "加油公里数")
     private String mileage;
 
+    /** 备注 */
+    @ApiModelProperty(value = "备注")
+    @Excel(name = "备注")
+    private String remark;
+
     /** 审批备注 */
     @ApiModelProperty(value = "审批备注")
     @Excel(name = "审批备注")
     private String appRemark;
+    /** 收款金额 */
+    @Excel(name = "收款金额")
+    @ApiModelProperty(value = "收款金额")
+    private Double receivAmount;
+
+    /** 记账金额 */
+    @Excel(name = "记账金额")
+    @ApiModelProperty(value = "记账金额")
+    private Double recordAmount;
+
+    /**原客户id*/
+    private String oldCustmerId;
 
     public void setId(String id)
     {
@@ -200,12 +228,12 @@ public class OrderManager extends BaseEntity
     {
         return carNo;
     }
-    public void setCustmerId(Long custmerId) 
+    public void setCustmerId(String custmerId)
     {
         this.custmerId = custmerId;
     }
 
-    public Long getCustmerId() 
+    public String getCustmerId()
     {
         return custmerId;
     }
@@ -352,6 +380,64 @@ public class OrderManager extends BaseEntity
     public String getAppRemark() 
     {
         return appRemark;
+    }
+
+    @Override
+    public String getRemark() {
+        return remark;
+    }
+
+    @Override
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public Double getReceivAmount() {
+        return receivAmount;
+    }
+
+    public void setReceivAmount(Double receivAmount) {
+        this.receivAmount = receivAmount;
+    }
+
+    public Double getRecordAmount() {
+        return recordAmount;
+    }
+
+    public void setRecordAmount(Double recordAmount) {
+        this.recordAmount = recordAmount;
+    }
+
+    public double getRecordMoney() {
+        return recordMoney;
+    }
+
+    public void setRecordMoney(double recordMoney) {
+        this.recordMoney = recordMoney;
+    }
+
+    public double getComponyReceiverMoney() {
+        return componyReceiverMoney;
+    }
+
+    public void setComponyReceiverMoney(double componyReceiverMoney) {
+        this.componyReceiverMoney = componyReceiverMoney;
+    }
+
+    public double getDriverReceiverMoney() {
+        return driverReceiverMoney;
+    }
+
+    public void setDriverReceiverMoney(double driverReceiverMoney) {
+        this.driverReceiverMoney = driverReceiverMoney;
+    }
+
+    public String getOldCustmerId() {
+        return oldCustmerId;
+    }
+
+    public void setOldCustmerId(String oldCustmerId) {
+        this.oldCustmerId = oldCustmerId;
     }
 
     @Override

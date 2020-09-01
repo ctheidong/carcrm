@@ -16,15 +16,26 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         select id, custmer_name, create_time, remark,phone_num from custmer
     </sql>
 
-    <select id="selectCustmerList" parameterType="Custmer" resultMap="CustmerResult">
-        <include refid="selectCustmerVo"/>
-        <where>  
-            <if test="custmerName != null  and custmerName != ''"> and custmer_name like concat('%', #{custmerName}, '%')</if>
-            <if test="createTime != null "> and create_time = #{createTime}</if>
+    <!--<select id="selectCustmerList" parameterType="Custmer" resultMap="CustmerResult">-->
+        <!--<include refid="selectCustmerVo"/>-->
+        <!--<where>  -->
+            <!--<if test="custmerName != null  and custmerName != ''"> and custmer_name like concat('%', #{custmerName}, '%')</if>-->
+            <!--<if test="createTime != null "> and create_time = #{createTime}</if>-->
+        <!--</where>-->
+    <!--</select>-->
+    <select id="selectCustmerList" parameterType="Custmer" resultType="Custmer">
+        SELECT t.id,t.custmer_name AS custmerName,t.order_money AS orderMoney,t.record_money AS recordMoney,t.returned_money AS returnedMoney,
+               t.arrear_money AS arrearMoney, t.remark
+        FROM custmer t
+        <where>
+        <if test="custmerName != null  and custmerName != ''"> and custmer_name like concat('%', #{custmerName}, '%')</if>
+        <if test="phoneNum != null and phoneNum != ''"> and phone_num = #{phoneNum}</if>
+        <if test="status != null  and status != '' and status == '1'"> and arrear_money !=0 or arrear_money != null</if>
+        <if test="status != null  and status != '' and status == '2'"> and arrear_money =0 or arrear_money = null</if>
         </where>
     </select>
     
-    <select id="selectCustmerById" parameterType="Long" resultMap="CustmerResult">
+    <select id="selectCustmerById" parameterType="String" resultMap="CustmerResult">
         <include refid="selectCustmerVo"/>
         where id = #{id}
     </select>
@@ -32,15 +43,27 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <insert id="insertCustmer" parameterType="Custmer" useGeneratedKeys="true" keyProperty="id">
         insert into custmer
         <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
             <if test="phoneNum != null">phone_num,</if>
             <if test="custmerName != null">custmer_name,</if>
-            <if test="createTime != null">create_time,</if>
+            create_time,
+            <if test="latestMoney != null">latest_money,</if>
+            <if test="arrearMoney != null">arrear_money,</if>
+            <if test="returnedMoney != null">returned_money,</if>
+            <if test="orderMoney != null">order_money,</if>
+            <if test="recordMoney != null">record_money,</if>
             <if test="remark != null">remark,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
             <if test="phoneNum != null">#{phoneNum},</if>
             <if test="custmerName != null">#{custmerName},</if>
-            <if test="createTime != null">#{createTime},</if>
+            sysdate(),
+            <if test="latestMoney != null">#{latestMoney},</if>
+            <if test="arrearMoney != null">#{arrearMoney},</if>
+            <if test="returnedMoney != null">#{returnedMoney},</if>
+            <if test="orderMoney != null">#{orderMoney},</if>
+            <if test="recordMoney != null">#{recordMoney},</if>
             <if test="remark != null">#{remark},</if>
          </trim>
     </insert>
@@ -52,6 +75,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="custmerName != null">custmer_name = #{custmerName},</if>
             <if test="createTime != null">create_time = #{createTime},</if>
             <if test="remark != null">remark = #{remark},</if>
+            <if test="latestMoney != null">latest_money = #{latestMoney},</if>
+            <if test="returnedMoney != null">returned_money = #{returnedMoney},</if>
+            <if test="orderMoney != null">order_money = #{orderMoney},</if>
+            <if test="recordMoney != null">record_money = #{recordMoney},</if>
+            update_time = sysdate(),
         </trim>
         where id = #{id}
     </update>

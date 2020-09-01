@@ -31,6 +31,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="remark"    column="remark"    />
         <result property="appRemark"    column="app_remark"    />
         <result property="updateTime"    column="update_time"    />
+        <result property="recordMoney"    column="record_money"    />
+        <result property="componyReceiverMoney"    column="componyreceiver_money"    />
+        <result property="driverReceiverMoney"    column="driverreceiver_money"    />
     </resultMap>
 
     <sql id="selectOrderManagerVo">
@@ -68,7 +71,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         order by order_date desc
     </select>
     
-    <select id="selectOrderManagerById" parameterType="Long" resultMap="OrderManagerResult">
+    <select id="selectOrderManagerById" parameterType="String" resultMap="OrderManagerResult">
         <include refid="selectOrderManagerVo"/>
         where id = #{id}
     </select>
@@ -96,6 +99,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <insert id="insertOrderManager" parameterType="OrderManager" useGeneratedKeys="true" keyProperty="id">
         insert into order_manager
         <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
             <if test="orderDate != null">order_date,</if>
             <if test="orderTime != null">order_time,</if>
             <if test="start != null and start != ''">start,</if>
@@ -121,8 +125,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="remark != null and remark != ''">remark,</if>
             <if test="appRemark != null and appRemark != ''">app_remark,</if>
             <if test="updateTime != null">update_time,</if>
+            <if test="recordMoney != null">record_money,</if>
+            <if test="componyReceiverMoney != null">componyreceiver_money,</if>
+            <if test="driverReceiverMoney != null">driverreceiver_money,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
             <if test="orderDate != null">#{orderDate},</if>
             <if test="orderTime != null">#{orderTime},</if>
             <if test="start != null and start != ''">#{start},</if>
@@ -148,7 +156,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="remark != null and remark != ''">#{remark},</if>
             <if test="appRemark != null and appRemark != ''">#{appRemark},</if>
             <if test="updateTime != null">#{updateTime},</if>
-         </trim>
+            <if test="recordMoney != null">#{recordMoney},</if>
+            <if test="componyReceiverMoney != null">#{componyReceiverMoney},</if>
+            <if test="driverReceiverMoney != null">#{driverReceiverMoney},</if>
+        </trim>
     </insert>
 
     <update id="updateOrderManager" parameterType="OrderManager">
@@ -179,6 +190,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="remark != null and remark != ''">remark = #{remark},</if>
             <if test="appRemark != null and appRemark != ''">app_remark = #{appRemark},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="recordMoney != null and recordMoney != ''">record_money = #{recordMoney},</if>
+            <if test="componyReceiverMoney != null and componyReceiverMoney != ''">componyreceiver_money = #{componyReceiverMoney},</if>
+            <if test="driverReceiverMoney != null">driverreceiver_money = #{driverReceiverMoney},</if>
         </trim>
         where id = #{id}
     </update>

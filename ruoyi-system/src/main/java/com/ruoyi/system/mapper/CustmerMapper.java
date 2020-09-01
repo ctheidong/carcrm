@@ -17,7 +17,7 @@ public interface CustmerMapper
      * @param id 客户管理ID
      * @return 客户管理
      */
-    public Custmer selectCustmerById(Long id);
+    public Custmer selectCustmerById(String id);
 
     /**
      * 查询客户管理列表
@@ -49,7 +49,7 @@ public interface CustmerMapper
      * @param id 客户管理ID
      * @return 结果
      */
-    public int deleteCustmerById(Long id);
+    public int deleteCustmerById(String id);
 
     /**
      * 批量删除客户管理

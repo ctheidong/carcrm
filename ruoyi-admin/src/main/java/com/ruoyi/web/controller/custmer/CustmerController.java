@@ -7,8 +7,10 @@ import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.system.domain.Custmer;
+import com.ruoyi.system.domain.OrderManager;
 import com.ruoyi.system.module.utils.Authorize;
 import com.ruoyi.system.service.ICustmerService;
+import com.ruoyi.system.service.IOrderManagerService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -35,6 +37,8 @@ public class CustmerController extends BaseController
 
     @Autowired
     private ICustmerService custmerService;
+    @Autowired
+    private IOrderManagerService orderManagerService;
 
     @RequiresPermissions("custmer:custmer:view")
     @GetMapping()
@@ -58,7 +62,7 @@ public class CustmerController extends BaseController
     /**
      * 小程序查询客户管理列表
      */
-    @ApiOperation(value = "获取客户列表接口",httpMethod = "post")
+    @ApiOperation(value = "获取客户列表接口",httpMethod = "POST")
     @ApiImplicitParam(example = "{}",defaultValue = "{}",required = true)
     @PostMapping("/getlist")
     @ResponseBody
@@ -109,7 +113,7 @@ public class CustmerController extends BaseController
      * 修改客户管理
      */
     @GetMapping("/edit/{id}")
-    public String edit(@PathVariable("id") Long id, ModelMap mmap)
+    public String edit(@PathVariable("id") String id, ModelMap mmap)
     {
         Custmer custmer = custmerService.selectCustmerById(id);
         mmap.put("custmer", custmer);
@@ -127,7 +131,53 @@ public class CustmerController extends BaseController
     {
         return toAjax(custmerService.updateCustmer(custmer));
     }
+    /**
+     * 还款客户管理
+     */
+    @GetMapping("/return/{bb}")
+    public String returnMoney(@PathVariable("bb") String id, ModelMap mmap)
+    {
+        Custmer custmer = custmerService.selectCustmerById(id);
+        mmap.put("custmer", custmer);
+        return prefix + "/return";
+    }
+    /**
+     * 还款保存客户管理
+     */
+    @RequiresPermissions("custmer:custmer:edit")
+    @Log(title = "客户管理", businessType = BusinessType.UPDATE)
+    @PostMapping("/return")
+    @ResponseBody
+    public AjaxResult returnMoneySave(Custmer custmer)
+    {
+        //记账金额
+        custmer.setRecordMoney(custmer.getRecordMoney()-custmer.getLatestMoney());
+       //已回款金额
+        custmer.setReturnedMoney(custmer.getReturnedMoney()+custmer.getLatestMoney());
+       //欠款金额
+        custmer.setArrearMoney(custmer.getRecordMoney()-custmer.getReturnedMoney());
+        return toAjax(custmerService.updateCustmer(custmer));
+    }
 
+    /**
+     * 该客户的订单页面
+     *
+     */
+    @GetMapping("/order/{bb}")
+    public String order(@PathVariable("bb") String custmerId, ModelMap mmap)
+    {
+        mmap.put("custmerId", custmerId);
+        return prefix + "/record";
+    }
+    @RequiresPermissions("custmer:custmer:edit")
+    @PostMapping("/orderList")
+    @ResponseBody
+    public TableDataInfo orderList(OrderManager orderManager)
+    {
+        startPage();
+        List<OrderManager> list = orderManagerService.selectOrderManagerList(orderManager);
+        return getDataTable(list);
+    }
     /**
      * 删除客户管理
      */

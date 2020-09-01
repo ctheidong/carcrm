@@ -149,3 +149,5 @@ swagger:
 #  min-idle: 0
 #  # 连接超时
 #  timeout: 3000
+excel:
+  tempatePath: excelTemplate/carTemlate.xlsx #订单模板地址

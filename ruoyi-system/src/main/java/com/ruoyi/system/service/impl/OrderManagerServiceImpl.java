@@ -29,7 +29,7 @@ public class OrderManagerServiceImpl implements IOrderManagerService
      * @return 订单管理
      */
     @Override
-    public OrderManager selectOrderManagerById(Long id)
+    public OrderManager selectOrderManagerById(String id)
     {
         return orderManagerMapper.selectOrderManagerById(id);
     }

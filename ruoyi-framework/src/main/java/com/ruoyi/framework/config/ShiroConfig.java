@@ -284,7 +284,7 @@ public class ShiroConfig
         filterChainDefinitionMap.put("/quit", "anon");
         filterChainDefinitionMap.put("/order/manager/getList", "anon");
         filterChainDefinitionMap.put("/order/manager/minAdd", "anon");
-        filterChainDefinitionMap.put("/order/manager/minDetail/*", "anon");
+        filterChainDefinitionMap.put("/order/manager/minDetail", "anon");
         filterChainDefinitionMap.put("/order/manager/revocation", "anon");
         filterChainDefinitionMap.put("/order/manager/getTypeList", "anon");
         filterChainDefinitionMap.put("/custmer/custmer/getlist", "anon");

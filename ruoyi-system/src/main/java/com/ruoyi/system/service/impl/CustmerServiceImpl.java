@@ -28,7 +28,7 @@ public class CustmerServiceImpl implements ICustmerService
      * @return 客户管理
      */
     @Override
-    public Custmer selectCustmerById(Long id)
+    public Custmer selectCustmerById(String id)
     {
         return custmerMapper.selectCustmerById(id);
     }
@@ -89,7 +89,7 @@ public class CustmerServiceImpl implements ICustmerService
      * @return 结果
      */
     @Override
-    public int deleteCustmerById(Long id)
+    public int deleteCustmerById(String id)
     {
         return custmerMapper.deleteCustmerById(id);
     }

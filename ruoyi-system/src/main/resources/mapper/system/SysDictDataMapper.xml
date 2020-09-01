@@ -40,11 +40,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		</where>
 	</select>
 	<!--付款方式列表-->
-	<select id="selectDictData" parameterType="SysDictData" resultMap="SysDictDataResult">
-		SELECT dict_label AS dictLable,dict_value AS dictValue FROM sys_dict_data
+	<select id="selectDictData" parameterType="SysDictData" resultType="SysDictData">
+		SELECT dict_label AS dictLabel,dict_value AS dictValue FROM sys_dict_data
 		where status = '0' and dict_type = 'payment_term' order by dict_sort asc
 	</select>
-	<select id="selectDictDataByType"  resultType="SysDictData">
+	<select id="selectDictDataByType"  resultMap="SysDictDataResult">
 		<include refid="selectDictDataVo"/>
 		where status = '0' and dict_type = #{dictType} order by dict_sort asc
 	</select>

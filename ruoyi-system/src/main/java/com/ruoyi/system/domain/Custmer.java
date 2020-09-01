@@ -20,22 +20,48 @@ public class Custmer extends BaseEntity
 
     /** id */
     @ApiModelProperty("客户id")
-    private Long id;
+    private String id;
 
     /** 客户名称 */
     @Excel(name = "客户名称")
     @ApiModelProperty("客户名称")
     private String custmerName;
+
     /** 客户名称 */
     @Excel(name = "手机号")
     private String phoneNum;
 
-    public void setId(Long id) 
+    /** 订单金额 */
+    @Excel(name = "订单金额")
+    private double orderMoney;
+
+    /** 记账金额 */
+    @Excel(name = "记账金额")
+    private double recordMoney;
+
+    /** 已回款金额 */
+    @Excel(name = "已回款金额")
+    private double returnedMoney;
+
+    /**欠款金额 */
+    @Excel(name = "欠款金额")
+    private double arrearMoney;
+
+    /**最近一次还款金额 */
+    @Excel(name = "最近一次还款金额")
+    private double latestMoney;
+
+    /**记账状态 1：有欠款 2：无欠款 */
+    @Excel(name = "记账状态 1：有欠款 2：无欠款 ")
+    private String status;
+
+
+    public void setId(String id)
     {
         this.id = id;
     }
 
-    public Long getId() 
+    public String getId()
     {
         return id;
     }
@@ -56,6 +82,55 @@ public class Custmer extends BaseEntity
     public void setPhoneNum(String phoneNum) {
         this.phoneNum = phoneNum;
     }
+
+    public double getOrderMoney() {
+        return orderMoney;
+    }
+
+    public void setOrderMoney(double orderMoney) {
+        this.orderMoney = orderMoney;
+    }
+
+    public double getRecordMoney() {
+        return recordMoney;
+    }
+
+    public void setRecordMoney(double recordMoney) {
+        this.recordMoney = recordMoney;
+    }
+
+    public double getReturnedMoney() {
+        return returnedMoney;
+    }
+
+    public void setReturnedMoney(double returnedMoney) {
+        this.returnedMoney = returnedMoney;
+    }
+
+    public double getArrearMoney() {
+        return arrearMoney;
+    }
+
+    public void setArrearMoney(double arrearMoney) {
+        this.arrearMoney = arrearMoney;
+    }
+
+    public double getLatestMoney() {
+        return latestMoney;
+    }
+
+    public void setLatestMoney(double latestMoney) {
+        this.latestMoney = latestMoney;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
 
     @Override
     public String toString() {

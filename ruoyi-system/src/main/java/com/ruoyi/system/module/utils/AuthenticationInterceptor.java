@@ -64,6 +64,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                     userName = JWT.decode(token).getClaim("username").asString();
 //                    password = JWT.decode(token).getClaim("password").asString();
                 } catch (JWTDecodeException j) {
+                     j.printStackTrace();
                     throw new RuntimeException("访问异常！");
                 }
                 SysUser user = userService.selectUserByLoginName(userName);

@@ -18,7 +18,7 @@ public interface IOrderManagerService
      * @param id 订单管理ID
      * @return 订单管理
      */
-    public OrderManager selectOrderManagerById(Long id);
+    public OrderManager selectOrderManagerById(String id);
 
     /**
      * 查询订单管理列表
