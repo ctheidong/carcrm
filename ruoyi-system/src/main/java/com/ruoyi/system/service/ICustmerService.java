@@ -58,4 +58,11 @@ public interface ICustmerService
      * @return 结果
      */
     public int deleteCustmerById(String id);
+
+    /**
+     * 判断客户名称是否存在
+     * @param custmer
+     * @return
+     */
+    public String checkCustmerNameUnique(Custmer custmer);
 }

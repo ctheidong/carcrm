@@ -58,4 +58,11 @@ public interface CustmerMapper
      * @return 结果
      */
     public int deleteCustmerByIds(String[] ids);
+
+    /**
+     * 判断客户名称是否存在
+     * @param custmer
+     * @return
+     */
+    public int checkCustmerNameUnique(Custmer custmer);
 }

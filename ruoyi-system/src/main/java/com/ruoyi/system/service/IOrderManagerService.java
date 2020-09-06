@@ -1,5 +1,7 @@
 package com.ruoyi.system.service;
 
+import com.ruoyi.common.constant.UserConstants;
+import com.ruoyi.system.domain.Custmer;
 import com.ruoyi.system.domain.OrderManager;
 
 import java.util.List;
@@ -88,4 +90,17 @@ public interface IOrderManagerService
      * @return 订单管理集合
      */
     public List<Double> selectIncomeMoneyByMonth();
+    /* 校验客户id是否唯一
+     *
+     * @param custmerId 客户id
+     * @return
+     */
+    public String checkCustmerIdUnique(String custmerId);
+
+    /**
+     * 统计客户列表数据
+     * @param custmer
+     * @return
+     */
+    public List<Custmer> selectCustmerListTj(Custmer custmer);
 }

@@ -1,5 +1,7 @@
 package com.ruoyi.system.mapper;
 
+import com.ruoyi.common.constant.UserConstants;
+import com.ruoyi.system.domain.Custmer;
 import com.ruoyi.system.domain.OrderManager;
 
 import java.util.List;
@@ -88,4 +90,19 @@ public interface OrderManagerMapper
      * @return 结果
      */
     public int deleteOrderManagerByIds(String[] ids);
+    /**
+     * 校验客户id是否唯一
+     *
+     * @param custmerId 客户id
+     * @return
+     */
+    public int checkCustmerIdUnique(String custmerId);
+
+    /**
+     * 统计客户列表数据
+     * @param custmer
+     * @return
+     */
+    public List<Custmer> selectCustmerListTj(Custmer custmer);
+
 }

@@ -11,6 +11,7 @@ import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.system.domain.Custmer;
 import com.ruoyi.system.domain.OrderManager;
 import com.ruoyi.system.domain.SysDictData;
+import com.ruoyi.system.domain.SysUser;
 import com.ruoyi.system.module.utils.Authorize;
 import com.ruoyi.system.service.ICustmerService;
 import com.ruoyi.system.service.IOrderManagerService;
@@ -272,8 +273,9 @@ public class OrderManagerController extends BaseController {
             Custmer custmer = new Custmer();
             custmer.setId(orderManager.getCustmerId());
             custmer.setCustmerName(orderManager.getCustmerName());
-            custmer.setOrderMoney(orderManager.getTowingFee());
-            custmer.setRecordMoney(orderManager.getRecordAmount());
+//            custmer.setOrderMoney(orderManager.getTowingFee());
+//            custmer.setRecordMoney(orderManager.getRecordMoney());
+//            custmer.setReturnedMoney(orderManager.getReturnAmount());//收款专员回款金额
             int i = custmerService.insertCustmer(custmer);
             if (i == 0) {
                 return AjaxResult.error("新增客户失败");
@@ -281,7 +283,15 @@ public class OrderManagerController extends BaseController {
         }
         return toAjax(orderManagerService.updateOrderManager(orderManager));
     }
-
+    /**
+     * 校验客户id是否唯一
+     */
+    @PostMapping("/checkCustmerIdUnique")
+    @ResponseBody
+    public String checkLoginNameUnique(OrderManager orderManager)
+    {
+        return orderManagerService.checkCustmerIdUnique(orderManager.getCustmerId());
+    }
     /**
      * 修改保存订单管理
      */
@@ -345,7 +355,7 @@ public class OrderManagerController extends BaseController {
                 row.createCell(10).setCellValue(residentList.get(i).getRemark());   //备注
                 row.createCell(11).setCellValue(residentList.get(i).getComponyReceiverMoney());   //公司支付金额
                 row.createCell(12).setCellValue(residentList.get(i).getReturnMoney());   //司机回款金额
-                //            row.createCell(13).setCellValue(residentList.get(i).getHjStr());   //收款专员回款
+                row.createCell(13).setCellValue(residentList.get(i).getReturnAmount());   //收款专员回款
                 row.createCell(14).setCellValue(residentList.get(i).getMileage());   //加油公里数
                 row.createCell(15).setCellValue(residentList.get(i).getRefuelMoney());   //加油金额
                 row.createCell(16).setCellValue(residentList.get(i).getRefuelcardMoney());   //油卡加油金额
@@ -363,8 +373,9 @@ public class OrderManagerController extends BaseController {
             wb.write(response.getOutputStream());
             wb.close();
         } catch (Exception e) {
+            e.printStackTrace();
             log.error("导出Excel异常{}", e.getMessage());
-            throw new BusinessException("导出Excel失败，请联系网站管理员！");
+            throw new BusinessException("导出Excel失败，请联系管理员！");
         } finally {
             if (wb != null) {
                 try {

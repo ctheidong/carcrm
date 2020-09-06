@@ -21,6 +21,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.spi.CurrencyNameProvider;
 
 /**
  * 客户管理Controller
@@ -56,7 +57,8 @@ public class CustmerController extends BaseController
     public TableDataInfo list(Custmer custmer)
     {
         startPage();
-        List<Custmer> list = custmerService.selectCustmerList(custmer);
+//        List<Custmer> list = custmerService.selectCustmerList(custmer);
+        List<Custmer> list = orderManagerService.selectCustmerListTj(custmer);
         return getDataTable(list);
     }
     /**
@@ -110,6 +112,17 @@ public class CustmerController extends BaseController
     }
 
     /**
+     * 检查客户名称是否唯一
+     * @param custmer
+     * @return
+     */
+    @PostMapping("/checkCustmerNameUnique")
+    @ResponseBody
+    public String checkCustmerNameUnique(Custmer custmer){
+        String result = custmerService.checkCustmerNameUnique(custmer);
+        return result;
+    }
+    /**
      * 修改客户管理
      */
     @GetMapping("/edit/{id}")
@@ -141,23 +154,23 @@ public class CustmerController extends BaseController
         mmap.put("custmer", custmer);
         return prefix + "/return";
     }
-    /**
-     * 还款保存客户管理
-     */
-    @RequiresPermissions("custmer:custmer:edit")
-    @Log(title = "客户管理", businessType = BusinessType.UPDATE)
-    @PostMapping("/return")
-    @ResponseBody
-    public AjaxResult returnMoneySave(Custmer custmer)
-    {
-        //记账金额
-        custmer.setRecordMoney(custmer.getRecordMoney()-custmer.getLatestMoney());
-       //已回款金额
-        custmer.setReturnedMoney(custmer.getReturnedMoney()+custmer.getLatestMoney());
-       //欠款金额
-        custmer.setArrearMoney(custmer.getRecordMoney()-custmer.getReturnedMoney());
-        return toAjax(custmerService.updateCustmer(custmer));
-    }
+//    /**
+//     * 还款保存客户管理
+//     */
+//    @RequiresPermissions("custmer:custmer:edit")
+//    @Log(title = "客户管理", businessType = BusinessType.UPDATE)
+//    @PostMapping("/return")
+//    @ResponseBody
+//    public AjaxResult returnMoneySave(Custmer custmer)
+//    {
+//        //记账金额
+//        custmer.setRecordMoney(custmer.getRecordMoney()-custmer.getLatestMoney());
+//       //已回款金额
+//        custmer.setReturnedMoney(custmer.getReturnedMoney()+custmer.getLatestMoney());
+//       //欠款金额
+//        custmer.setArrearMoney(custmer.getRecordMoney()-custmer.getReturnedMoney());
+//        return toAjax(custmerService.updateCustmer(custmer));
+//    }
 
     /**
      * 该客户的订单页面

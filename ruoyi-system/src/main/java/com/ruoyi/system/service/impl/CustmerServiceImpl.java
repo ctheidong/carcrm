@@ -1,6 +1,9 @@
 package com.ruoyi.system.service.impl;
 
 import java.util.List;
+import java.util.UUID;
+
+import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,6 +57,8 @@ public class CustmerServiceImpl implements ICustmerService
     @Override
     public int insertCustmer(Custmer custmer)
     {
+        String id = UUID.randomUUID().toString().substring(1,10).replace("-","");
+        custmer.setId(id);
         custmer.setCreateTime(DateUtils.getNowDate());
         return custmerMapper.insertCustmer(custmer);
     }
@@ -92,5 +97,15 @@ public class CustmerServiceImpl implements ICustmerService
     public int deleteCustmerById(String id)
     {
         return custmerMapper.deleteCustmerById(id);
+    }
+
+    @Override
+    public String checkCustmerNameUnique(Custmer custmer) {
+        int count = custmerMapper.checkCustmerNameUnique(custmer);
+        if (count > 0)
+        {
+            return UserConstants.USER_NAME_NOT_UNIQUE;
+        }
+        return UserConstants.USER_NAME_UNIQUE;
     }
 }

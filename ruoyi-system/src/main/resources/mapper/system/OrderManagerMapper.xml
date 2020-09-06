@@ -34,10 +34,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="recordMoney"    column="record_money"    />
         <result property="componyReceiverMoney"    column="componyreceiver_money"    />
         <result property="driverReceiverMoney"    column="driverreceiver_money"    />
+        <result property="returnAmount"    column="return_amount"    />
     </resultMap>
 
     <sql id="selectOrderManagerVo">
-        select id, order_date, order_time, start, end, car_type, car_no, custmer_id, custmer_name, phone_num, payment_term, towing_fee, towcar_no, commission, za_fee, approve_status, driver_name, user_id, company_pay, return_money, refuel_money, refuelcard_money, mileage, remark, app_remark, update_time from order_manager
+        select id, order_date, order_time, start, end, car_type, car_no, custmer_id, custmer_name, phone_num, payment_term, towing_fee, towcar_no, commission, za_fee, approve_status, driver_name, user_id, company_pay, return_money, refuel_money, refuelcard_money, mileage, remark, app_remark, update_time,return_amount,record_money,componyreceiver_money,driverreceiver_money from order_manager
     </sql>
 
     <select id="selectOrderManagerList" parameterType="OrderManager" resultMap="OrderManagerResult">
@@ -70,7 +71,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </where>
         order by order_date desc
     </select>
-    
+    <!--验证客户id的唯一性-->
+    <select id="checkCustmerIdUnique" parameterType="String" resultType="int">
+        select count(*) from order_manager where custmer_id = #{custmerId}
+    </select>
     <select id="selectOrderManagerById" parameterType="String" resultMap="OrderManagerResult">
         <include refid="selectOrderManagerVo"/>
         where id = #{id}
@@ -95,7 +99,91 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         SELECT  t.towing_fee-t.refuel_money-t.refuelcard_money-t.commission AS commission FROM order_manager  t WHERE t.approve_status = 2
         GROUP BY DATE_FORMAT(t.order_date,'%c') ORDER BY DATE_FORMAT(t.order_date,'%c') ASC
     </select>
-        
+    <!--客户列表统计-->
+    <select id="selectCustmerListTj" parameterType="Custmer" resultType="Custmer">
+      <choose>
+          <when test="status != null and status=='1'.toString()"><!--1 代表无欠款-->
+              select id,custmerName,phoneNum,towingFee,recordMoney,returnAmount,arrearMoney,remark from (
+              SELECT
+              m.id,
+              m.custmer_name AS custmerName,
+              m.phone_num AS phoneNum,
+              SUM(t.towing_fee) AS towingFee,
+              SUM(t.record_money) AS recordMoney,
+              SUM(t.return_amount) AS returnAmount,
+              CASE
+              WHEN (
+              SUM(t.record_money) - SUM(t.return_amount)
+              ) > 0
+              THEN (
+              SUM(t.record_money) - SUM(t.return_amount)
+              )
+              ELSE 0
+              END arrearMoney,
+              m.remark
+              FROM
+              custmer m
+              LEFT JOIN (SELECT b.custmer_id,b.towing_fee,b.record_money,b.return_amount FROM order_manager b
+              WHERE b.approve_status = 2 ) t
+              ON  m.id = t.custmer_id
+              GROUP BY m.id
+              ) p where p.arrearMoney !=0
+          </when>
+          <when test="status != null and status=='2'.toString()"><!--2 代表欠款-->
+            select id,custmerName,phoneNum,towingFee,recordMoney,returnAmount,arrearMoney,remark from (
+              SELECT
+              m.id,
+              m.custmer_name AS custmerName,
+              m.phone_num AS phoneNum,
+              SUM(t.towing_fee) AS towingFee,
+              SUM(t.record_money) AS recordMoney,
+              SUM(t.return_amount) AS returnAmount,
+              CASE
+              WHEN (
+              SUM(t.record_money) - SUM(t.return_amount)
+              ) > 0
+              THEN (
+              SUM(t.record_money) - SUM(t.return_amount)
+              )
+              ELSE 0
+              END arrearMoney,
+              m.remark
+              FROM
+              custmer m
+              LEFT JOIN (SELECT b.custmer_id,b.towing_fee,b.record_money,b.return_amount FROM order_manager b
+              WHERE b.approve_status = 2 ) t
+              ON  m.id = t.custmer_id
+              GROUP BY m.id
+              ) p where p.arrearMoney = 0
+          </when>
+          <otherwise>
+              SELECT
+              m.id,
+              m.custmer_name AS custmerName,
+              m.phone_num AS phoneNum,
+              SUM(t.towing_fee) AS towingFee,
+              SUM(t.record_money) AS recordMoney,
+              SUM(t.return_amount) AS returnAmount,
+              CASE
+              WHEN (
+              SUM(t.record_money) - SUM(t.return_amount)
+              ) > 0
+              THEN (
+              SUM(t.record_money) - SUM(t.return_amount)
+              )
+              ELSE 0
+              END arrearMoney,
+              m.remark
+              FROM
+              custmer m
+              LEFT JOIN (SELECT b.custmer_id,b.towing_fee,b.record_money,b.return_amount FROM order_manager b
+              WHERE b.approve_status = 2 ) t
+              ON  m.id = t.custmer_id
+              GROUP BY m.id
+          </otherwise>
+      </choose>
+    </select>
+
     <insert id="insertOrderManager" parameterType="OrderManager" useGeneratedKeys="true" keyProperty="id">
         insert into order_manager
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -128,6 +216,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="recordMoney != null">record_money,</if>
             <if test="componyReceiverMoney != null">componyreceiver_money,</if>
             <if test="driverReceiverMoney != null">driverreceiver_money,</if>
+            <if test="returnAmount != null">return_amount,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">#{id},</if>
@@ -159,6 +248,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="recordMoney != null">#{recordMoney},</if>
             <if test="componyReceiverMoney != null">#{componyReceiverMoney},</if>
             <if test="driverReceiverMoney != null">#{driverReceiverMoney},</if>
+            <if test="returnAmount != null">#{returnAmount},</if>
         </trim>
     </insert>
 
@@ -193,6 +283,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="recordMoney != null and recordMoney != ''">record_money = #{recordMoney},</if>
             <if test="componyReceiverMoney != null and componyReceiverMoney != ''">componyreceiver_money = #{componyReceiverMoney},</if>
             <if test="driverReceiverMoney != null">driverreceiver_money = #{driverReceiverMoney},</if>
+            <if test="returnAmount != null">return_amount = #{returnAmount},</if>
         </trim>
         where id = #{id}
     </update>

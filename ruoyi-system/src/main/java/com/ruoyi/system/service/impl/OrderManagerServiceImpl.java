@@ -1,7 +1,9 @@
 package com.ruoyi.system.service.impl;
 
+import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.system.domain.Custmer;
 import com.ruoyi.system.domain.OrderManager;
 import com.ruoyi.system.mapper.OrderManagerMapper;
 import com.ruoyi.system.service.IOrderManagerService;
@@ -113,5 +115,21 @@ public class OrderManagerServiceImpl implements IOrderManagerService
     @Override
     public List<Double> selectIncomeMoneyByMonth() {
         return orderManagerMapper.selectIncomeMoneyByMonth();
+    }
+
+    @Override
+    public String checkCustmerIdUnique(String custmerId)
+    {
+        int count = orderManagerMapper.checkCustmerIdUnique(custmerId);
+        if (count > 0)
+        {
+            return UserConstants.USER_NAME_NOT_UNIQUE;
+        }
+        return UserConstants.USER_NAME_UNIQUE;
+    }
+
+    @Override
+    public List<Custmer> selectCustmerListTj(Custmer custmer) {
+        return orderManagerMapper.selectCustmerListTj(custmer);
     }
 }

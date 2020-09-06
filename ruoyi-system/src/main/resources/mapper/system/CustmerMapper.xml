@@ -39,7 +39,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectCustmerVo"/>
         where id = #{id}
     </select>
-        
+
+    <select id="checkCustmerNameUnique" parameterType="Custmer" resultType="int">
+        select  count(1) from custmer where custmer_name = #{custmerName}
+    </select>
+
     <insert id="insertCustmer" parameterType="Custmer" useGeneratedKeys="true" keyProperty="id">
         insert into custmer
         <trim prefix="(" suffix=")" suffixOverrides=",">

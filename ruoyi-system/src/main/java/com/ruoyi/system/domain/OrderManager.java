@@ -153,14 +153,9 @@ public class OrderManager extends BaseEntity
     @Excel(name = "审批备注")
     private String appRemark;
     /** 收款金额 */
-    @Excel(name = "收款金额")
-    @ApiModelProperty(value = "收款金额")
-    private Double receivAmount;
-
-    /** 记账金额 */
-    @Excel(name = "记账金额")
-    @ApiModelProperty(value = "记账金额")
-    private Double recordAmount;
+    @Excel(name = "回款金额（收款专员回款）")
+    @ApiModelProperty(value = "回款金额（收款专员回款）")
+    private Double returnAmount;
 
     /**原客户id*/
     private String oldCustmerId;
@@ -392,21 +387,6 @@ public class OrderManager extends BaseEntity
         this.remark = remark;
     }
 
-    public Double getReceivAmount() {
-        return receivAmount;
-    }
-
-    public void setReceivAmount(Double receivAmount) {
-        this.receivAmount = receivAmount;
-    }
-
-    public Double getRecordAmount() {
-        return recordAmount;
-    }
-
-    public void setRecordAmount(Double recordAmount) {
-        this.recordAmount = recordAmount;
-    }
 
     public double getRecordMoney() {
         return recordMoney;
@@ -438,6 +418,14 @@ public class OrderManager extends BaseEntity
 
     public void setOldCustmerId(String oldCustmerId) {
         this.oldCustmerId = oldCustmerId;
+    }
+
+    public Double getReturnAmount() {
+        return returnAmount;
+    }
+
+    public void setReturnAmount(Double returnAmount) {
+        this.returnAmount = returnAmount;
     }
 
     @Override
