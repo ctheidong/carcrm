@@ -24,7 +24,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <!--</where>-->
     <!--</select>-->
     <select id="selectCustmerList" parameterType="Custmer" resultType="Custmer">
-        SELECT t.id,t.custmer_name AS custmerName,t.order_money AS orderMoney,t.record_money AS recordMoney,t.returned_money AS returnedMoney,
+        SELECT t.id,t.custmer_name AS custmerName,concat(t.custmer_name,'-',t.phone_num) as custmerNameAndPhone, t.order_money AS orderMoney,t.record_money AS recordMoney,t.returned_money AS returnedMoney,
                t.arrear_money AS arrearMoney, t.remark
         FROM custmer t
         <where>

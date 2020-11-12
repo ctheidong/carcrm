@@ -285,6 +285,7 @@ public class ShiroConfig
         filterChainDefinitionMap.put("/order/manager/getList", "anon");
         filterChainDefinitionMap.put("/order/manager/minAdd", "anon");
         filterChainDefinitionMap.put("/order/manager/minDetail", "anon");
+        filterChainDefinitionMap.put("/order/manager/minUpdateSave", "anon");
         filterChainDefinitionMap.put("/order/manager/revocation", "anon");
         filterChainDefinitionMap.put("/order/manager/getTypeList", "anon");
         filterChainDefinitionMap.put("/custmer/custmer/getlist", "anon");
@@ -297,6 +298,7 @@ public class ShiroConfig
         filterChainDefinitionMap.put("/register", "anon,captchaValidate");
         // 系统权限列表
         // filterChainDefinitionMap.putAll(SpringUtils.getBean(IMenuService.class).selectPermsAll());
+        filterChainDefinitionMap.put("/order/manager/minremove", "anon");
 
         Map<String, Filter> filters = new LinkedHashMap<String, Filter>();
         filters.put("onlineSession", onlineSessionFilter());

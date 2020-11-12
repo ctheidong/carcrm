@@ -21,6 +21,7 @@ public class OrderManager extends BaseEntity
     private static final long serialVersionUID = 1L;
 
     /** 订单ID */
+    @ApiModelProperty("订单id")
     private String id;
 
     /** 日期 */

@@ -6,16 +6,16 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.exception.BusinessException;
+import com.ruoyi.common.json.JSONObject;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.system.domain.Custmer;
-import com.ruoyi.system.domain.OrderManager;
-import com.ruoyi.system.domain.SysDictData;
-import com.ruoyi.system.domain.SysUser;
+import com.ruoyi.framework.util.ShiroUtils;
+import com.ruoyi.system.domain.*;
 import com.ruoyi.system.module.utils.Authorize;
 import com.ruoyi.system.service.ICustmerService;
 import com.ruoyi.system.service.IOrderManagerService;
 import com.ruoyi.system.service.ISysDictDataService;
+import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.utils.DowlonFileUtils;
 import com.ruoyi.system.utils.ResultDemo;
 import io.swagger.annotations.Api;
@@ -42,6 +42,7 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 订单管理Controller
@@ -63,6 +64,8 @@ public class OrderManagerController extends BaseController {
     private ISysDictDataService dataService;
     @Autowired
     private ICustmerService custmerService;
+    @Autowired
+    private ISysRoleService sysRoleService;
 
     /**
      * 小程序查询付款方式列表
@@ -92,6 +95,12 @@ public class OrderManagerController extends BaseController {
     @PostMapping("/list")
     @ResponseBody
     public TableDataInfo list(OrderManager orderManager) {
+
+        //通过当前登录用户userId判断是否含有客户管理员角色
+        List<SysRole> sysRoles = sysRoleService.selectRolesByUserId(ShiroUtils.getUserId()).stream().filter(sysRole -> 2==sysRole.getRoleId()).collect(Collectors.toList());
+       if(ShiroUtils.getUserId() != 1 && !(sysRoles.size()>0)){
+           orderManager.setUserId(ShiroUtils.getUserId() );
+       }
         startPage();
         List<OrderManager> list = orderManagerService.selectOrderManagerList(orderManager);
         return getDataTable(list);
@@ -181,13 +190,66 @@ public class OrderManagerController extends BaseController {
     public TableDataInfo minAddSave(@RequestBody OrderManager orderManager) {
         //订单编号为当前插入日期
         orderManager.setId(DateUtils.parseDateToStr("yyyymmdd", DateUtils.getNowDate()));
+       orderManager.setApproveStatus(1);
         int result = orderManagerService.insertOrderManager(orderManager);
         if (result > 0) {
             return ResultDemo.resultSuccess("操作成功！");
         }
         return ResultDemo.resultError("操作失败！");
     }
-
+    /**
+     * 小程序新增保存订单管理
+     */
+    @ApiOperation(value = "小程序修改订单", httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "订单id", required = true),
+            @ApiImplicitParam(name = "orderDate", value = "日期", required = true),
+            @ApiImplicitParam(name = "start", value = "起点", required = true),
+            @ApiImplicitParam(name = "end", value = "终点", required = true),
+            @ApiImplicitParam(name = "carType", value = "车型", required = true),
+            @ApiImplicitParam(name = "carNo", value = "车牌号", required = true),
+            @ApiImplicitParam(name = "custmerId", value = "客户id", required = true),
+            @ApiImplicitParam(name = "custmerName", value = "客户姓名", required = true),
+            @ApiImplicitParam(name = "phoneNum", value = "联系电话", required = true),
+            @ApiImplicitParam(name = "paymentTerm", value = "收款方式 1：记账 2：司机收款 3公司二维码：", required = true),
+            @ApiImplicitParam(name = "towingFee", value = "拖车费", required = true),
+            @ApiImplicitParam(name = "towcarNo", value = "拖车车牌号", required = true),
+            @ApiImplicitParam(name = "commission", value = "提成", required = true),
+            @ApiImplicitParam(name = "zaFee", value = "杂费", required = true),
+            @ApiImplicitParam(name = "approveStatus", value = "审批状态 1:待审批 2:通过 3:驳回 4:撤销"),
+            @ApiImplicitParam(name = "driverName", value = "司机姓名", required = true),
+            @ApiImplicitParam(name = "userId", value = "司机userId", required = true),
+            @ApiImplicitParam(name = "companyPay", value = "公司支付金额"),
+            @ApiImplicitParam(name = "returnMoney", value = "司机回款金额"),
+            @ApiImplicitParam(name = "refuelMoney", value = "加油金额"),
+            @ApiImplicitParam(name = "refuelcardMoney", value = "加油卡加油费"),
+            @ApiImplicitParam(name = "mileage", value = "加油公里数"),
+            @ApiImplicitParam(name = "appRemark", value = "审批备注"),
+    })
+    @Log(title = "订单管理", businessType = BusinessType.INSERT)
+    @PostMapping("/minUpdateSave")
+    @Authorize
+    @ResponseBody
+    public TableDataInfo minUpdateSave(@RequestBody OrderManager orderManager) {
+        //订单编号为当前插入日期
+        orderManager.setId(DateUtils.parseDateToStr("yyyymmdd", DateUtils.getNowDate()));
+        //收款方式 1：记账 2：司机收款 3公司二维码：
+        if(orderManager.getPaymentTerm()==1){
+            //如果收款方式为记账，则设置记账金额
+            orderManager.setRecordMoney(orderManager.getTowingFee());
+        }else if(orderManager.getPaymentTerm()==2){
+            //如果收款方式为司机收款，则设置司机收款金额
+            orderManager.setDriverReceiverMoney(orderManager.getTowingFee());
+        }else{
+            //如果收款方式为公司收款，则设置公司收款金额
+            orderManager.setComponyReceiverMoney(orderManager.getTowingFee());
+        }
+            int result = orderManagerService.updateOrderManager(orderManager);
+        if (result > 0) {
+            return ResultDemo.resultSuccess("操作成功！");
+        }
+        return ResultDemo.resultError("操作失败！");
+    }
     /**
      * 小程序订单详情
      */
@@ -303,6 +365,19 @@ public class OrderManagerController extends BaseController {
 
         return toAjax(orderManagerService.updateOrderManager(orderManager));
     }
+    /**
+     * 删除订单管理
+     */
+    @ApiOperation("小程序删除订单接口")
+    @ApiImplicitParam(name = "id",value = "订单id",dataType = "String",required = true)
+    @Authorize
+    @Log(title = "订单管理", businessType = BusinessType.DELETE)
+    @PostMapping("/minremove")
+    @ResponseBody
+    public AjaxResult remove(@RequestBody JSONObject jsonObject) {
+        String ids = jsonObject.getStr("id");
+        return toAjax(orderManagerService.deleteOrderManagerByIds(ids));
+    }
 
     /**
      * 删除订单管理
@@ -322,6 +397,11 @@ public class OrderManagerController extends BaseController {
     public void myexport(HttpServletResponse response) throws Exception {
         //        File file = ResourceUtils.getFile(analyzeTemplatePath);  //jar包下找不到文件
         OrderManager orderManager = new OrderManager();
+        //通过当前登录用户userId判断是否含有客户管理员角色
+        List<SysRole> sysRoles = sysRoleService.selectRolesByUserId(ShiroUtils.getUserId()).stream().filter(sysRole -> 2==sysRole.getRoleId()).collect(Collectors.toList());
+        if(ShiroUtils.getUserId() != 1 && !(sysRoles.size()>0)){
+            orderManager.setUserId(ShiroUtils.getUserId() );
+        }
         OutputStream out = null;
 //        Workbook wb = new XSSFWorkbook();
         Workbook wb = null;
@@ -331,7 +411,7 @@ public class OrderManagerController extends BaseController {
             InputStream is = DowlonFileUtils.getResourcesFileInputStream(tempatePath);
             SimpleDateFormat sdf1 = new SimpleDateFormat("yyyyMMdd hhmmss");
             //标题行抽出字段
-            String[] title = {"序号", "日期", "拖运起始地点、车型、车牌号、联系电话", "收款金额", "记账金额", "客户名称", "提成", "杂费", "司机", "拖车车牌号码", "备注", "公司支付金额", "司机回款金额", "收款专员回款", "加油公里数", "加油金额", "油卡加油", "备注"};
+            String[] title = {"序号", "日期", "拖运起始地点","车型","车牌号","联系电话", "收款金额", "记账金额", "客户名称", "提成", "杂费", "司机", "拖车车牌号码", "备注", "公司支付金额", "司机回款金额", "收款专员回款", "加油公里数", "加油金额", "油卡加油", "备注"};
             //读取文件模板并创建wb对象
             wb = new XSSFWorkbook(is);
             Sheet stuSheet = wb.getSheetAt(0);//获取到第一个工作表
@@ -343,29 +423,33 @@ public class OrderManagerController extends BaseController {
                 //把值一一写进单元格里
                 //设置第一列为自动递增的序号
                 row.createCell(0).setCellValue(i + 1);
-                row.createCell(1).setCellValue(DateUtils.parseDateToStr("yyyy-mm-dd HH:mm:ss", residentList.get(i).getOrderDate())); //日期
-                row.createCell(2).setCellValue(residentList.get(i).getStart() + "、" + residentList.get(i).getCarType() + "、" + residentList.get(i).getCarNo() + "、" + residentList.get(i).getPhoneNum()); //起始地点。。。
-                row.createCell(3).setCellValue(residentList.get(i).getDriverReceiverMoney());   //收款金额
-                row.createCell(4).setCellValue(residentList.get(i).getRecordMoney());   //记账金额
-                row.createCell(5).setCellValue(residentList.get(i).getCustmerName());   //客户名称
-                row.createCell(6).setCellValue(residentList.get(i).getCommission());   //提成
-                row.createCell(7).setCellValue(residentList.get(i).getZaFee());   //杂费
-                row.createCell(8).setCellValue(residentList.get(i).getDriverName());   //司机
-                row.createCell(9).setCellValue(residentList.get(i).getCarNo());   //拖车车牌号码
-                row.createCell(10).setCellValue(residentList.get(i).getRemark());   //备注
-                row.createCell(11).setCellValue(residentList.get(i).getComponyReceiverMoney());   //公司支付金额
-                row.createCell(12).setCellValue(residentList.get(i).getReturnMoney());   //司机回款金额
-                row.createCell(13).setCellValue(residentList.get(i).getReturnAmount());   //收款专员回款
-                row.createCell(14).setCellValue(residentList.get(i).getMileage());   //加油公里数
-                row.createCell(15).setCellValue(residentList.get(i).getRefuelMoney());   //加油金额
-                row.createCell(16).setCellValue(residentList.get(i).getRefuelcardMoney());   //油卡加油金额
-                row.createCell(17).setCellValue(residentList.get(i).getAppRemark());   //审批备注
+                row.createCell(1).setCellValue(DateUtils.parseDateToStr("yyyy-MM-dd HH:mm:ss", residentList.get(i).getOrderDate())); //日期
+                row.createCell(2).setCellValue(residentList.get(i).getStart()); //起始地点
+                row.createCell(3).setCellValue(residentList.get(i).getEnd()); //拖车终点
+                row.createCell(4).setCellValue(residentList.get(i).getCarType());//车型
+                row.createCell(5).setCellValue(residentList.get(i).getCarNo());//车牌号
+                row.createCell(6).setCellValue(residentList.get(i).getPhoneNum());//联系电话
+                row.createCell(7).setCellValue(residentList.get(i).getDriverReceiverMoney());   //收款金额
+                row.createCell(8).setCellValue(residentList.get(i).getRecordMoney());   //记账金额
+                row.createCell(9).setCellValue(residentList.get(i).getCustmerName());   //客户名称
+                row.createCell(10).setCellValue(residentList.get(i).getCommission());   //提成
+                row.createCell(11).setCellValue(residentList.get(i).getZaFee());   //杂费
+                row.createCell(12).setCellValue(residentList.get(i).getDriverName());   //司机
+                row.createCell(13).setCellValue(residentList.get(i).getCarNo());   //拖车车牌号码
+                row.createCell(14).setCellValue(residentList.get(i).getRemark());   //备注
+                row.createCell(15).setCellValue(residentList.get(i).getComponyReceiverMoney());   //公司支付金额
+                row.createCell(16).setCellValue(residentList.get(i).getReturnMoney());   //司机回款金额
+                row.createCell(17).setCellValue(residentList.get(i).getReturnAmount());   //收款专员回款
+                row.createCell(18).setCellValue(residentList.get(i).getMileage());   //加油公里数
+                row.createCell(19).setCellValue(residentList.get(i).getRefuelMoney());   //加油金额
+                row.createCell(20).setCellValue(residentList.get(i).getRefuelcardMoney());   //油卡加油金额
+                row.createCell(21).setCellValue(residentList.get(i).getAppRemark());   //审批备注
             }
-            //设置单元格宽度自适应，在此基础上把宽度调至1.5倍
-            for (int i = 0; i < title.length; i++) {
-                stuSheet.autoSizeColumn(i, true);
-                stuSheet.setColumnWidth(i, stuSheet.getColumnWidth(i) * 15 / 10);
-            }
+//            //设置单元格宽度自适应，在此基础上把宽度调至1.5倍
+//            for (int i = 0; i < title.length; i++) {
+//                stuSheet.autoSizeColumn(i, true);
+//                stuSheet.setColumnWidth(i, stuSheet.getColumnWidth(i) * 15 / 10);
+//            }
             response.setCharacterEncoding("UTF-8");
             response.setContentType("application/ms-excel;charset=utf-8");
             response.setHeader("Content-Disposition", "attachment;filename=orderInfo.xlsx");

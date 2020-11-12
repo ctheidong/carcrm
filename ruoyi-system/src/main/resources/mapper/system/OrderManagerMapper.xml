@@ -126,6 +126,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
               LEFT JOIN (SELECT b.custmer_id,b.towing_fee,b.record_money,b.return_amount FROM order_manager b
               WHERE b.approve_status = 2 ) t
               ON  m.id = t.custmer_id
+              <where>
+                  <if test="custmerName !=null and custmerName != ''">m.custmer_name like concat('%',#{custmerName},'%')</if>
+                  <if test="phoneNum !=null and phoneNum != ''">m.phone_num like concat('%',#{phoneNum},'%')</if>
+              </where>
               GROUP BY m.id
               ) p where p.arrearMoney !=0
           </when>
@@ -153,6 +157,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
               LEFT JOIN (SELECT b.custmer_id,b.towing_fee,b.record_money,b.return_amount FROM order_manager b
               WHERE b.approve_status = 2 ) t
               ON  m.id = t.custmer_id
+              <where>
+                  <if test="custmerName !=null and custmerName != ''">m.custmer_name like concat('%',#{custmerName},'%')</if>
+                  <if test="phoneNum !=null and phoneNum != ''">m.phone_num like concat('%',#{phoneNum},'%')</if>
+              </where>
               GROUP BY m.id
               ) p where p.arrearMoney = 0
           </when>
@@ -179,6 +187,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
               LEFT JOIN (SELECT b.custmer_id,b.towing_fee,b.record_money,b.return_amount FROM order_manager b
               WHERE b.approve_status = 2 ) t
               ON  m.id = t.custmer_id
+              <where>
+                  <if test="custmerName !=null and custmerName != ''">m.custmer_name like concat('%',#{custmerName},'%')</if>
+                  <if test="phoneNum !=null and phoneNum != ''">m.phone_num like concat('%',#{phoneNum},'%')</if>
+              </where>
               GROUP BY m.id
           </otherwise>
       </choose>

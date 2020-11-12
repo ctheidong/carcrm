@@ -27,6 +27,10 @@ public class Custmer extends BaseEntity
     @ApiModelProperty("客户名称")
     private String custmerName;
 
+    /** 客户名称-手机号 */
+    @ApiModelProperty("客户名称-手机号  用于小程序下拉框进行筛选数据")
+    private String custmerNameAndPhone;
+
     /** 客户名称 */
     @Excel(name = "手机号")
     private String phoneNum;
@@ -54,6 +58,7 @@ public class Custmer extends BaseEntity
     /**记账状态 1：有欠款 2：无欠款 */
     @Excel(name = "记账状态 1：有欠款 2：无欠款 ")
     private String status;
+
 
 
     public void setId(String id)
@@ -131,6 +136,13 @@ public class Custmer extends BaseEntity
         this.status = status;
     }
 
+    public String getCustmerNameAndPhone() {
+        return custmerNameAndPhone;
+    }
+
+    public void setCustmerNameAndPhone(String custmerNameAndPhone) {
+        this.custmerNameAndPhone = custmerNameAndPhone;
+    }
 
     @Override
     public String toString() {

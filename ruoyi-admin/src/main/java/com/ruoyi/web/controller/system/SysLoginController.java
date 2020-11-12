@@ -124,7 +124,7 @@ public class SysLoginController extends BaseController
         user.setPassword(password1);
         // 然后再通过登录名称和加密后的密码查询数据库对应的用户信息  是否存在
         SysUser userResult = userService.selectUserByLoginNameAndPwd(user);
-        if(!StringUtils.isNotNull(user1)){
+        if(!StringUtils.isNotNull(userResult)){
             return ResultDemo.result();
         }
         user.setPassword(userResult.getPassword());
